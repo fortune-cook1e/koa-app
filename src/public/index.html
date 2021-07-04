@@ -7,6 +7,23 @@
     <title>Document</title>
   </head>
   <body>
-    <div id="root">this is document</div>
+    <div id="root">
+      <h1>this is document haha</h1>
+      <button id="btn">click me</button>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io({
+        auth: {
+          token: 'token'
+        }
+      })
+
+      socket.on('connect', () => {
+        alert('connected!')
+        socket.send('hello')
+        socket.emit('recevie')
+      })
+    </script>
   </body>
 </html>
