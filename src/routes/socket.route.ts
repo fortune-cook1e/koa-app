@@ -1,5 +1,5 @@
 import { Context, DefaultState } from 'koa'
-import * as Router from 'koa-router'
+import Router from 'koa-router'
 
 const router = new Router<DefaultState, Context>({ prefix: '/socket' })
 

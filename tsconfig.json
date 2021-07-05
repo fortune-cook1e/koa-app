@@ -1,10 +1,18 @@
 {
   "compilerOptions": {
       "module": "commonjs",
-      "target": "es2017",
-      "noImplicitAny": true,
       "outDir": "./dist",
-      "sourceMap": true
+      "sourceMap": false,
+      "target": "esnext",
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "declaration": true,
+      "allowJs": false,
+      "allowSyntheticDefaultImports": true,
+      "noUnusedLocals": false,
+      "strictNullChecks": true,
+      "noImplicitAny": false,
+      "removeComments": false,
   },
   "include": [
       "./src/**/*"

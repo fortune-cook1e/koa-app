@@ -1,4 +1,4 @@
-import * as Router from 'koa-router'
+import Router from 'koa-router'
 import pool from '../mysql'
 
 const router = new Router({ prefix: '/user' })
