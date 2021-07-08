@@ -2,6 +2,10 @@ import Koa, { Context, Next } from 'koa'
 import http from 'http'
 import path from 'path'
 import fs from 'fs-extra'
+import resolve from 'resolve-from'
+
+import { rewriteContent } from './utils'
+import { resolveModule } from './resolveModule'
 
 interface ServerConfig {
   port: number
@@ -27,7 +31,18 @@ export const createServer = async ({ cwd, port }: ServerConfig) => {
       const jsFilePath = path.resolve(cwd, url.slice(1))
       const jsContent = fs.readFileSync(jsFilePath, 'utf-8')
       ctx.type = 'application/javascript'
-      ctx.body = jsContent
+
+      const content = rewriteContent(jsContent)
+      ctx.body = content
+    } else if (url.startsWith('/@modules')) {
+      resolveModule('lodash', cwd)
+      // const prefix = path.resolve(__dirname, '../../node_modules', url.replace('/@modules/', ''))
+      // const module = require(prefix + '/package.json').module
+      // const p = path.resolve(prefix, module)
+      // console.log({ prefix, module, p })
+      // const ret = fs.readFileSync(p, 'utf-8')
+      // ctx.type = 'application/javascript'
+      // ctx.body = rewriteContent(ret)
     }
     await next()
   })
