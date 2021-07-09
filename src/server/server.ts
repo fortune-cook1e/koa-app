@@ -4,7 +4,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import resolve from 'resolve-from'
 
-import { rewriteContent } from './utils'
+import { rewrite } from './rewriteContent'
 import { resolveModule } from './resolveModule'
 
 interface ServerConfig {
@@ -32,10 +32,10 @@ export const createServer = async ({ cwd, port }: ServerConfig) => {
       const jsContent = fs.readFileSync(jsFilePath, 'utf-8')
       ctx.type = 'application/javascript'
 
-      const content = rewriteContent(jsContent)
+      const content = rewrite(jsContent)
       ctx.body = content
-    } else if (url.startsWith('/@modules')) {
-      resolveModule('lodash', cwd)
+    } else if (url.startsWith('/__modules')) {
+      resolveModule('vue', cwd, ctx)
       // const prefix = path.resolve(__dirname, '../../node_modules', url.replace('/@modules/', ''))
       // const module = require(prefix + '/package.json').module
       // const p = path.resolve(prefix, module)

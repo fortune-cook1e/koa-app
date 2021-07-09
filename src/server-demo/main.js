@@ -1,7 +1,4 @@
-import _ from 'lodash'
+import { createApp } from 'vue'
 
-const result = _.chunk(['a', 'b', 'c', 'd'], 2)
-
-console.log({ result })
-
+console.log({ createApp })
 console.log(123)

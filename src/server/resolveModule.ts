@@ -1,15 +1,19 @@
 import resolve from 'resolve-from'
 import path from 'path'
+import { sendJSStream } from './utils'
+import { Context } from 'koa'
 
-export const resolveModule = (id: string, cwd: string) => {
+export const resolveModule = (id: string, cwd: string, ctx: Context) => {
   let modulePath = ''
 
   modulePath = resolve(id, `${id}/package.json`)
 
-  const pkg = require(modulePath)
+  if (id === 'vue') {
+    modulePath = path.join(path.dirname(modulePath), 'dist/vue.runtime.esm-browser.js')
+  } else {
+    const pkg = require(modulePath)
+    modulePath = path.join(path.dirname(modulePath), pkg.module || pkg.main)
+  }
 
-  // const moduleDirname = path.dirname(pkg)
-  // modulePath = path.join(moduleDirname)
-
-  console.log({ pkg, modulePath })
+  sendJSStream(ctx, modulePath)
 }
