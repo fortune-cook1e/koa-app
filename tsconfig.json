@@ -6,7 +6,7 @@
       "target": "esnext",
       "moduleResolution": "node",
       "esModuleInterop": true,
-      "declaration": true,
+      "declaration": false,
       "allowJs": false,
       "allowSyntheticDefaultImports": true,
       "noUnusedLocals": false,
