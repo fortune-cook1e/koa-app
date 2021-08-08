@@ -21,6 +21,7 @@ export const server = http.createServer(app.callback())
 export const io = new SocketIo.Server(server)
 require('./socket')
 
+console.log('koa app test ci/cd')
 app.use(views(__dirname + '/public', { extension: 'html' }))
 app.use(cors())
 app.use(bodyParser())
