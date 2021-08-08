@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import pool from '../mysql'
+// import pool from '../mysql'
 
 const router = new Router({ prefix: '/user' })
 
@@ -9,12 +9,12 @@ router.get('/', async (ctx, next) => {
     age: 20
   }
 
-  pool.query('SELECT * from user', (err, results) => {
-    if (err) {
-      console.log(err)
-    }
-    console.log({ results })
-  })
+  // pool.query('SELECT * from user', (err, results) => {
+  //   if (err) {
+  //     console.log(err)
+  //   }
+  //   console.log({ results })
+  // })
 
   await next()
 })
