@@ -8,7 +8,5 @@
 
  RUN yarn install && yarn build 
 
- EXPOSE 3003
-
  CMD ["node","dist/app.js"]
  
