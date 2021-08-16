@@ -5,7 +5,7 @@ const router = new Router({ prefix: '/user' })
 
 router.get('/', async (ctx, next) => {
   ctx.body = {
-    name: 'gaoliang',
+    name: 'glglglgl',
     age: 20
   }
 
