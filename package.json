@@ -7,21 +7,28 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --watch 'src/**/*' -e ts,tsx --exec ts-node ./src/app.ts",
+    "dev:new": "nodemon --watch 'src/**/*' -e ts,tsx --exec ts-node ./src/newApp.ts",
     "build": "tsc --build",
-    "start": "cross-env NODE_ENT=production node dist/app.js"
+    "start": "cross-env NODE_ENT=production node dist/app.js",
+    "start:new": "cross-env NODE_ENT=production node dist/newApp.js"
   },
   "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
     "fs-extra": "^10.0.0",
+    "kcors": "^2.2.2",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
     "koa-logger": "^3.2.1",
+    "koa-multer": "^1.0.2",
     "koa-router": "^10.0.0",
     "koa-views": "^7.0.1",
     "koa2-cors": "^2.0.6",
     "mysql": "^2.18.1",
+    "reflect-metadata": "^0.1.13",
+    "routing-controllers": "^0.9.0",
     "socket.io": "^4.1.2",
-    "typescript": "^4.3.5",
-    "yarn": "^1.22.10"
+    "typescript": "^4.3.5"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.11",

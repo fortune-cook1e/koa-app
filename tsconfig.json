@@ -9,6 +9,8 @@
       "declaration": false,
       "allowJs": false,
       "allowSyntheticDefaultImports": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
       "noUnusedLocals": false,
       "strictNullChecks": true,
       "noImplicitAny": false,
