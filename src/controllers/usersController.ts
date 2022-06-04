@@ -1,10 +1,12 @@
+import { Context } from 'koa'
 import { DeepPartial } from 'typeorm'
 import {
   JsonController,
   Get,
   Post,
   Body,
-  UnauthorizedError
+  UnauthorizedError,
+  Ctx
 } from 'routing-controllers'
 import { Inject, Service } from 'typedi'
 import { genSalt, hash } from 'bcrypt'
@@ -22,8 +24,8 @@ export default class UserController {
   @Inject() private readonly usersService: UsersService
 
   @Get()
-  async getAll() {
-    return await this.usersService.getData()
+  async getAll(@Ctx() ctx) {
+    return ctx.success(await this.usersService.getData())
   }
 
   @Post('/login')
