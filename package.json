@@ -6,18 +6,24 @@
   "author": "fortune cookie <767077147@qq.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --watch 'src/**/*' -e ts,tsx --exec ts-node ./src/app.ts",
-    "dev:new": "nodemon --watch 'src/**/*' -e ts,tsx --exec ts-node ./src/newApp.ts",
-    "build": "tsc --build",
-    "start": "cross-env NODE_ENT=production node dist/app.js",
-    "start:new": "cross-env NODE_ENT=production node dist/newApp.js"
+    "dev": " cross-env NODE_ENV=development ts-node-dev src/app.ts",
+    "build": "cross-env NODE_ENV=production tsc --build",
+    "lint": "cross-env eslint src --ext .js,.ts --cache --fix"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "yarn lint",
+      "git add ."
+    ]
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "dotenv": "^16.0.1",
     "fs-extra": "^10.0.0",
     "jsonwebtoken": "^8.5.1",
-    "kcors": "^2.2.2",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
     "koa-logger": "^3.2.1",
@@ -29,10 +35,11 @@
     "redis": "^4.0.6",
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.9.0",
-    "socket.io": "^4.1.2",
-    "typescript": "^4.3.5"
+    "typedi": "^0.10.0",
+    "typeorm": "^0.3.6"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/fs-extra": "^9.0.11",
     "@types/koa": "^2.13.3",
     "@types/koa-bodyparser": "^4.3.1",
@@ -43,10 +50,17 @@
     "@types/koa2-cors": "^2.0.1",
     "@types/mysql": "^2.15.18",
     "@types/node": "^15.12.4",
-    "@types/socket.io": "^3.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
     "cross-env": "^7.0.3",
-    "nodemon": "^2.0.7",
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.0",
     "prettier": "^2.3.2",
-    "ts-node": "^10.0.0"
+    "ts-node": "^10.0.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.7.3"
   }
 }

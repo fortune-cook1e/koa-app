@@ -1,31 +1,41 @@
-import Koa from 'koa'
-import bodyParser from 'koa-bodyparser'
-import logger from 'koa-logger'
-// import Router from 'koa-router'
-import cors from 'koa2-cors'
-import views from 'koa-views'
-import http from 'http'
-import SocketIo from 'socket.io'
+import 'reflect-metadata'
+import path from 'path'
+import { Container } from 'typedi'
+import { createKoaServer, useContainer } from 'routing-controllers'
+import { SuccessMiddleware } from './middlewares/success'
+import { ErrorMiddleware } from './middlewares/error'
+import { connectWithDB } from './entities/database'
+import { services } from './services'
 
-import userRouter from './routes/user.route'
-import socketRouter from './routes/socket.route'
+const PORT = 3000
 
-const app = new Koa()
-// TIP: 服务websocket
-export const server = http.createServer(app.callback())
+const start = async () => {
+  try {
+    // 这里useContainer必须在 createKoaServer之前调用
+    // 由于使用了 container，在所有的middlewares和controllers之前必须加@Service
+    // FIXME: https://github.com/typestack/routing-controllers/issues/642
+    const dataSource = await connectWithDB()
+    services.forEach(Service => {
+      Container.set(Service, new Service(dataSource))
+    })
+    useContainer(Container)
 
-// TIP: io 一定要放在server后 目前不能用单独文件引入
-export const io = new SocketIo.Server(server)
-require('./socket')
+    const app = createKoaServer({
+      // cors:{
 
-app.use(views(__dirname + '/public', { extension: 'html' }))
-app.use(cors())
-app.use(bodyParser())
-app.use(logger())
+      // },
+      // routePrefix: '/api', // 全局APi前缀
+      middlewares: [SuccessMiddleware, ErrorMiddleware],
+      controllers: [path.resolve(__dirname, './controllers/*.ts')],
+      defaultErrorHandler: false // 设置为false 可以走自己的错误中间件
+    })
 
-app.use(userRouter.routes()).use(userRouter.allowedMethods())
-app.use(socketRouter.routes())
+    app.listen(PORT, () => {
+      console.log(`app is running at http://localhost:${PORT}`)
+    })
+  } catch (e) {
+    console.log('TypeORM connection error:', e.message)
+  }
+}
 
-server.listen(3000, () => {
-  console.log('http://localhost:3000')
-})
+start()

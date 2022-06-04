@@ -1,26 +1,21 @@
 {
   "compilerOptions": {
-      "module": "commonjs",
-      "outDir": "./dist",
-      "sourceMap": false,
-      "target": "esnext",
-      "moduleResolution": "node",
-      "esModuleInterop": true,
-      "declaration": false,
-      "allowJs": false,
-      "allowSyntheticDefaultImports": true,
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "noUnusedLocals": false,
-      "strictNullChecks": true,
-      "noImplicitAny": false,
-      "removeComments": false,
-      "lib": [
-        "esnext",
-        "DOM"
-      ]
+    "module": "commonjs",
+    "outDir": "./dist",
+    "sourceMap": false,
+    "target": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "declaration": false,
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noUnusedLocals": false,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "removeComments": false,
+    "lib": ["esnext", "DOM"]
   },
-  "include": [
-      "./src/**/*"
-  ]
+  "include": ["./src/**/*"]
 }
