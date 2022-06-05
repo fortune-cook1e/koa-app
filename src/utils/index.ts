@@ -1,5 +1,5 @@
+import { Env } from './../types/common'
 import dotenv from 'dotenv'
-
 interface IEnvConstants {
   JWT_SECRET: string
   HOST: string
@@ -7,8 +7,6 @@ interface IEnvConstants {
   USERNAME: string
   PASSWORD: string
 }
-
-type Env = 'development' | 'production'
 
 const ENV_FILE_MAP: Record<Env, string> = {
   development: '.env.dev',

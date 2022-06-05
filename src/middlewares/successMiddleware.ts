@@ -1,3 +1,4 @@
+import { CodeMap } from '../types/code'
 import { Context, Next } from 'koa'
 import { Middleware, KoaMiddlewareInterface } from 'routing-controllers'
 import { Service } from 'typedi'
@@ -9,7 +10,7 @@ export class SuccessMiddleware implements KoaMiddlewareInterface {
   async use(ctx: Context, next: Next): Promise<any> {
     if (ctx.type === 'application/json') {
       ctx.body = {
-        code: 0,
+        code: CodeMap.SUCCESS,
         data: ctx.body
       }
     }

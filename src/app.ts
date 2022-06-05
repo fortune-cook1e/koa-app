@@ -3,7 +3,11 @@ import path from 'path'
 import logger from 'koa-logger'
 import { Container } from 'typedi'
 import { createKoaServer, useContainer } from 'routing-controllers'
-import { ResponseMiddleware } from './middlewares'
+import {
+  JWTMiddleware,
+  SuccessMiddleware,
+  ErrorMiddleware
+} from './middlewares'
 import { connectWithDB } from './entities/database'
 import { services } from './services'
 
@@ -25,7 +29,7 @@ const start = async () => {
 
       // },
       // routePrefix: '/api', // 全局APi前缀
-      middlewares: [ResponseMiddleware],
+      middlewares: [SuccessMiddleware, ErrorMiddleware, JWTMiddleware],
       controllers: [path.resolve(__dirname, './controllers/*.ts')],
       defaultErrorHandler: false // 设置为false 可以走自己的错误中间件
     })

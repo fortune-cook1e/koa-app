@@ -15,6 +15,7 @@ import { UsersService } from '../services'
 import { UsersEntity } from '../entities'
 import { LoginRequest } from '../types'
 import { getEnvConstants } from './../utils/index'
+import { GLOBAL_CONFIG } from '../config'
 
 const { JWT_SECRET } = getEnvConstants()
 
@@ -40,7 +41,9 @@ export default class UserController {
       // TIP: 用salt加密后再比较
       if (hashedPass === databaseUser.password) {
         const { password, salt, ...otherInfo } = databaseUser
-        const jwt = sign(JSON.parse(JSON.stringify(otherInfo)), JWT_SECRET)
+        const jwt = sign(JSON.parse(JSON.stringify(otherInfo)), JWT_SECRET, {
+          expiresIn: GLOBAL_CONFIG.JWT_EXPIRES_IN
+        })
         return {
           ...otherInfo,
           accessToken: jwt

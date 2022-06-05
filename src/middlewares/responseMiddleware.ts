@@ -18,10 +18,10 @@ export class ResponseMiddleware implements KoaMiddlewareInterface {
 
     ctx.fail = (msg: string, code?: CodeMap, type?: any) => {
       ctx.type = type || 'application/json'
-      ctx.body = {
+      return (ctx.body = {
         code: code || CodeMap.Fail,
         msg: msg || '服务器异常'
-      }
+      })
     }
 
     await next()
