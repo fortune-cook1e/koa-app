@@ -2,14 +2,23 @@ import 'reflect-metadata'
 import path from 'path'
 import logger from 'koa-logger'
 import { Container } from 'typedi'
-import { createKoaServer, useContainer } from 'routing-controllers'
+import { DeepPartial } from 'typeorm'
+import {
+  Action,
+  createKoaServer,
+  UnauthorizedError,
+  useContainer
+} from 'routing-controllers'
 import {
   JWTMiddleware,
   SuccessMiddleware,
-  ErrorMiddleware
+  ErrorMiddleware,
+  decodeJWT,
+  getJWT
 } from './middlewares'
 import { connectWithDB } from './entities/database'
 import { services } from './services'
+import { UsersEntity } from './entities'
 
 const PORT = 3000
 
@@ -31,7 +40,16 @@ const start = async () => {
       // routePrefix: '/api', // 全局APi前缀
       middlewares: [SuccessMiddleware, ErrorMiddleware, JWTMiddleware],
       controllers: [path.resolve(__dirname, './controllers/*.ts')],
-      defaultErrorHandler: false // 设置为false 可以走自己的错误中间件
+      defaultErrorHandler: false, // 设置为false 可以走自己的错误中间件
+      currentUserChecker(action: Action) {
+        try {
+          const token = getJWT(action.request.headers)
+          const decodedUser: DeepPartial<UsersEntity> = decodeJWT(token)
+          return decodedUser
+        } catch {
+          throw new UnauthorizedError()
+        }
+      }
     })
     app.use(logger())
 

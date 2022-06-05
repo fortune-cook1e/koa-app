@@ -1,9 +1,11 @@
 import { GLOBAL_CONFIG } from '../config/index'
 import { getEnvConstants } from '../utils/index'
 import { Context, Next } from 'koa'
+import { DeepPartial } from 'typeorm'
+import { UsersEntity } from '../entities'
 import { Middleware, KoaMiddlewareInterface } from 'routing-controllers'
 import { Service } from 'typedi'
-import { verify } from 'jsonwebtoken'
+import { verify, decode } from 'jsonwebtoken'
 import { CodeMap } from '../types'
 
 const { JWT_SECRET } = getEnvConstants()
@@ -13,6 +15,9 @@ export const getJWT = ({ authorization }: any): string => {
   const [, token]: string = authorization.split(' ')
   return token
 }
+
+export const decodeJWT = (token: string): DeepPartial<UsersEntity> =>
+  decode(token) as DeepPartial<UsersEntity>
 
 @Middleware({ type: 'before' })
 @Service()
