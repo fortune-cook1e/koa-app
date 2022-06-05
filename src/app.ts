@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 import path from 'path'
+import logger from 'koa-logger'
 import { Container } from 'typedi'
 import { createKoaServer, useContainer } from 'routing-controllers'
 import { ResponseMiddleware } from './middlewares'
@@ -28,6 +29,7 @@ const start = async () => {
       controllers: [path.resolve(__dirname, './controllers/*.ts')],
       defaultErrorHandler: false // 设置为false 可以走自己的错误中间件
     })
+    app.use(logger())
 
     app.listen(PORT, () => {
       console.log(`app is running at http://localhost:${PORT}`)
