@@ -1,4 +1,3 @@
-import { Context } from 'koa'
 import { DeepPartial } from 'typeorm'
 import {
   JsonController,
@@ -17,18 +16,18 @@ import { LoginRequest } from '../types'
 import { getEnvConstants } from './../utils/index'
 import { GLOBAL_CONFIG } from '../config'
 
-const { JWT_SECRET } = getEnvConstants()
-
 @JsonController('/users')
 @Service()
 export default class UserController {
   @Inject() private readonly usersService: UsersService
 
+  // 获取所有用户
   @Get()
   async getAll(@Ctx() ctx) {
     return ctx.success(await this.usersService.getData())
   }
 
+  // 登录
   @Post('/login')
   async login(@Body() user: LoginRequest): Promise<DeepPartial<UsersEntity>> {
     const { username, password } = user
@@ -40,6 +39,7 @@ export default class UserController {
       const hashedPass = await hash(password, databaseUser.salt)
       // TIP: 用salt加密后再比较
       if (hashedPass === databaseUser.password) {
+        const { JWT_SECRET } = getEnvConstants()
         const { password, salt, ...otherInfo } = databaseUser
         const jwt = sign(JSON.parse(JSON.stringify(otherInfo)), JWT_SECRET, {
           expiresIn: GLOBAL_CONFIG.JWT_EXPIRES_IN
@@ -56,7 +56,7 @@ export default class UserController {
   }
 
   // 新增用户
-  @Post('/add')
+  @Post('/register')
   async addUser(@Body() user: DeepPartial<UsersEntity>) {
     const { username, password } = user
     if (!username || !password) throw new Error('username or password is empty')
