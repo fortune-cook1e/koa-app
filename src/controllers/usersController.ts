@@ -41,12 +41,12 @@ export default class UserController {
       if (hashedPass === databaseUser.password) {
         const { JWT_SECRET } = getEnvConstants()
         const { password, salt, ...otherInfo } = databaseUser
-        const jwt = sign(JSON.parse(JSON.stringify(otherInfo)), JWT_SECRET, {
+        const token = sign(JSON.parse(JSON.stringify(otherInfo)), JWT_SECRET, {
           expiresIn: GLOBAL_CONFIG.JWT_EXPIRES_IN
         })
         return {
           ...otherInfo,
-          accessToken: jwt
+          accessToken: token
         }
       } else throw Error('password is not correct!')
     } catch (e) {
@@ -60,6 +60,11 @@ export default class UserController {
   async addUser(@Body() user: DeepPartial<UsersEntity>) {
     const { username, password } = user
     if (!username || !password) throw new Error('username or password is empty')
+    const databaseUser = await this.usersService.getByWhere({
+      username
+    })
+    if (databaseUser) throw new Error('用户已存在')
+
     const salt = await genSalt()
     const hashedPass = await hash(password, salt)
     const newUser = {
@@ -67,6 +72,16 @@ export default class UserController {
       salt,
       password: hashedPass
     }
-    return await this.usersService.create(newUser)
+
+    const newUserInfo = await this.usersService.create(newUser)
+    const { JWT_SECRET } = getEnvConstants()
+    const { password: userPasswor, salt: userSalt, ...otherInfo } = newUserInfo
+    const token = sign(JSON.parse(JSON.stringify(otherInfo)), JWT_SECRET, {
+      expiresIn: GLOBAL_CONFIG.JWT_EXPIRES_IN
+    })
+    return {
+      access_token: token,
+      ...otherInfo
+    }
   }
 }

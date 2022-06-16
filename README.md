@@ -15,3 +15,4 @@
 ## ⚠️ Waring
 
 本地开发时，一定要启动 mysql 服务
+执行命令 mysql.server start
