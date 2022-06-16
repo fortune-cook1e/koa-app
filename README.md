@@ -11,3 +11,7 @@
 - typeorm
 
 - mysql
+
+## ⚠️ Waring
+
+本地开发时，一定要启动 mysql 服务
