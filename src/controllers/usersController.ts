@@ -51,7 +51,7 @@ export default class UserController {
       } else throw Error('password is not correct!')
     } catch (e) {
       console.log(e)
-      throw new UnauthorizedError('user not found')
+      throw new UnauthorizedError(e.message || 'user not found')
     }
   }
 
@@ -63,6 +63,7 @@ export default class UserController {
     const databaseUser = await this.usersService.getByWhere({
       username
     })
+    console.log({ databaseUser })
     if (databaseUser) throw new Error('用户已存在')
 
     const salt = await genSalt()
