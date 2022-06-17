@@ -42,7 +42,7 @@ export default class UserController {
         const { JWT_SECRET } = getEnvConstants()
         const { password, salt, ...otherInfo } = databaseUser
         const token = sign(JSON.parse(JSON.stringify(otherInfo)), JWT_SECRET, {
-          expiresIn: GLOBAL_CONFIG.JWT_EXPIRES_IN
+          expiresIn: GLOBAL_CONFIG.jwt.expiresIn
         })
         return {
           ...otherInfo,
@@ -78,7 +78,7 @@ export default class UserController {
     const { JWT_SECRET } = getEnvConstants()
     const { password: userPasswor, salt: userSalt, ...otherInfo } = newUserInfo
     const token = sign(JSON.parse(JSON.stringify(otherInfo)), JWT_SECRET, {
-      expiresIn: GLOBAL_CONFIG.JWT_EXPIRES_IN
+      expiresIn: GLOBAL_CONFIG.jwt.expiresIn
     })
     return {
       access_token: token,

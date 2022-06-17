@@ -1,32 +1,58 @@
-import { GLOBAL_CONFIG } from '../config/index'
 import { getEnvConstants } from '../utils/index'
-import { Context, Next } from 'koa'
+import { Next } from 'koa'
 import { DeepPartial } from 'typeorm'
 import { UsersEntity } from '../entities'
 import { Middleware, KoaMiddlewareInterface } from 'routing-controllers'
 import { Service } from 'typedi'
 import { verify, decode } from 'jsonwebtoken'
-import { CodeMap } from '../types'
+import { CodeMap, IContext } from '../types'
 
 const { JWT_SECRET } = getEnvConstants()
 
-export const getJWT = ({ authorization }: any): string => {
-  if (!authorization) return ''
-  const [, token]: string = authorization.split(' ')
-  return token
+export const getJWTFromHttp = (ctx: IContext): string => {
+  const { key, type } = ctx.config.jwt
+  if (type === 'cookie') {
+    return ctx.cookies.get(key) || ''
+  } else {
+    const [, token] = ctx.headers['authorization']?.split(' ') || []
+    return token
+  }
 }
 
 export const decodeJWT = (token: string): DeepPartial<UsersEntity> =>
   decode(token) as DeepPartial<UsersEntity>
 
+// 注入JWT
+// 1. cookie 情况下则注入到cookie
+// 2. header 情况下注入到header中
+export const injectJWT = (ctx: IContext, token: string): string | void => {
+  const { expiresIn, type, key } = ctx.config.jwt
+  if (type === 'cookie') {
+    ctx.cookies.set(key, token, {
+      httpOnly: true,
+      maxAge: +expiresIn
+    })
+  } else {
+    ctx.set(key, token)
+  }
+}
+
+// 校验jwt
+export const verifyToken = (ctx: IContext) => {}
+
 @Middleware({ type: 'before' })
 @Service()
 export class JWTMiddleware implements KoaMiddlewareInterface {
-  async use(ctx: Context, next: Next) {
-    if (GLOBAL_CONFIG.JWT_UNLESS.includes(ctx.request.url)) {
+  async use(ctx: IContext, next: Next) {
+    const {
+      config: {
+        jwt: { unless }
+      }
+    } = ctx
+    if (unless.includes(ctx.request.url)) {
       await next()
     } else {
-      const accessToken = getJWT(ctx.request.headers)
+      const accessToken = getJWTFromHttp(ctx)
       if (!accessToken) {
         ctx.body = {
           code: CodeMap.Fail,

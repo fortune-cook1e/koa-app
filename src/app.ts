@@ -14,11 +14,12 @@ import {
   SuccessMiddleware,
   ErrorMiddleware,
   decodeJWT,
-  getJWT
+  getJWTFromHttp
 } from './middlewares'
 import { connectWithDB } from './entities/database'
 import { services } from './services'
 import { UsersEntity } from './entities'
+import { GLOBAL_CONFIG } from './config'
 
 const PORT = 3000
 
@@ -37,13 +38,14 @@ const start = async () => {
       // cors:{
 
       // },
+
       // routePrefix: '/api', // 全局APi前缀
       middlewares: [SuccessMiddleware, ErrorMiddleware, JWTMiddleware],
       controllers: [path.resolve(__dirname, './controllers/*.ts')],
       defaultErrorHandler: false, // 设置为false 可以走自己的错误中间件
       currentUserChecker(action: Action) {
         try {
-          const token = getJWT(action.request.headers)
+          const token = getJWTFromHttp(action.request.headers)
           const decodedUser: DeepPartial<UsersEntity> = decodeJWT(token)
           return decodedUser
         } catch {
@@ -51,6 +53,9 @@ const start = async () => {
         }
       }
     })
+
+    // 将全局配置注入到 context中
+    app.context.config = GLOBAL_CONFIG
     app.use(logger())
 
     app.listen(PORT, () => {
