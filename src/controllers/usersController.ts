@@ -1,3 +1,5 @@
+import { IContext } from './../types/common'
+import { generateToken, injectToken } from './../middlewares/jwtMiddleware'
 import { DeepPartial } from 'typeorm'
 import {
   JsonController,
@@ -9,12 +11,9 @@ import {
 } from 'routing-controllers'
 import { Inject, Service } from 'typedi'
 import { genSalt, hash } from 'bcrypt'
-import { sign } from 'jsonwebtoken'
 import { UsersService } from '../services'
 import { UsersEntity } from '../entities'
 import { LoginRequest } from '../types'
-import { getEnvConstants } from './../utils/index'
-import { GLOBAL_CONFIG } from '../config'
 
 @JsonController('/users')
 @Service()
@@ -29,7 +28,10 @@ export default class UserController {
 
   // 登录
   @Post('/login')
-  async login(@Body() user: LoginRequest): Promise<DeepPartial<UsersEntity>> {
+  async login(
+    @Ctx() ctx: IContext,
+    @Body() user: LoginRequest
+  ): Promise<DeepPartial<UsersEntity>> {
     const { username, password } = user
     try {
       const databaseUser = await this.usersService.getByWhere({
@@ -39,14 +41,12 @@ export default class UserController {
       const hashedPass = await hash(password, databaseUser.salt)
       // TIP: 用salt加密后再比较
       if (hashedPass === databaseUser.password) {
-        const { JWT_SECRET } = getEnvConstants()
         const { password, salt, ...otherInfo } = databaseUser
-        const token = sign(JSON.parse(JSON.stringify(otherInfo)), JWT_SECRET, {
-          expiresIn: GLOBAL_CONFIG.jwt.expiresIn
-        })
+        const accessToken = generateToken(ctx, otherInfo)
+        injectToken(ctx, accessToken)
         return {
           ...otherInfo,
-          accessToken: token
+          accessToken
         }
       } else throw Error('password is not correct!')
     } catch (e) {
@@ -57,13 +57,12 @@ export default class UserController {
 
   // 新增用户
   @Post('/register')
-  async addUser(@Body() user: DeepPartial<UsersEntity>) {
+  async addUser(@Ctx() ctx: IContext, @Body() user: DeepPartial<UsersEntity>) {
     const { username, password } = user
     if (!username || !password) throw new Error('username or password is empty')
     const databaseUser = await this.usersService.getByWhere({
       username
     })
-    console.log({ databaseUser })
     if (databaseUser) throw new Error('用户已存在')
 
     const salt = await genSalt()
@@ -75,14 +74,21 @@ export default class UserController {
     }
 
     const newUserInfo = await this.usersService.create(newUser)
-    const { JWT_SECRET } = getEnvConstants()
     const { password: userPasswor, salt: userSalt, ...otherInfo } = newUserInfo
-    const token = sign(JSON.parse(JSON.stringify(otherInfo)), JWT_SECRET, {
-      expiresIn: GLOBAL_CONFIG.jwt.expiresIn
-    })
+    const accessToken = generateToken(ctx, otherInfo)
+    injectToken(ctx, accessToken)
+
     return {
-      access_token: token,
+      access_token: accessToken,
       ...otherInfo
     }
+  }
+
+  // 注销
+  @Post('/logout')
+  logout(@Ctx() ctx: IContext) {
+    const { key } = ctx.config.jwt
+    ctx.cookies.set(key, '')
+    return null
   }
 }

@@ -1,3 +1,4 @@
+import { Gender } from './../types/user'
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity({ name: 'users' })
@@ -12,7 +13,7 @@ export class UsersEntity {
   age: number
 
   @Column({ nullable: true })
-  gender: 1 | 0
+  gender: Gender
 
   @Column({ nullable: false })
   password: string

@@ -1,22 +1,20 @@
-import { getEnvConstants } from '../utils/index'
+import { JwtPayload } from './../types/user'
 import { Next } from 'koa'
 import { DeepPartial } from 'typeorm'
 import { UsersEntity } from '../entities'
 import { Middleware, KoaMiddlewareInterface } from 'routing-controllers'
 import { Service } from 'typedi'
-import { verify, decode } from 'jsonwebtoken'
+import { verify, decode, sign } from 'jsonwebtoken'
 import { CodeMap, IContext } from '../types'
-
-const { JWT_SECRET } = getEnvConstants()
 
 export const getJWTFromHttp = (ctx: IContext): string => {
   const { key, type } = ctx.config.jwt
   if (type === 'cookie') {
     return ctx.cookies.get(key) || ''
-  } else {
-    const [, token] = ctx.headers['authorization']?.split(' ') || []
+  } else if (ctx.headers['authorization']) {
+    const [, token] = ctx.headers['authorization'].split(' ') || []
     return token
-  }
+  } else return ''
 }
 
 export const decodeJWT = (token: string): DeepPartial<UsersEntity> =>
@@ -25,7 +23,7 @@ export const decodeJWT = (token: string): DeepPartial<UsersEntity> =>
 // 注入JWT
 // 1. cookie 情况下则注入到cookie
 // 2. header 情况下注入到header中
-export const injectJWT = (ctx: IContext, token: string): string | void => {
+export const injectToken = (ctx: IContext, token: string): string | void => {
   const { expiresIn, type, key } = ctx.config.jwt
   if (type === 'cookie') {
     ctx.cookies.set(key, token, {
@@ -38,7 +36,18 @@ export const injectJWT = (ctx: IContext, token: string): string | void => {
 }
 
 // 校验jwt
-export const verifyToken = (ctx: IContext) => {}
+export const verifyToken = (ctx: IContext, token: string) => {
+  const { secret } = ctx.config.jwt
+  return verify(token, secret)
+}
+
+// 生成token
+export const generateToken = (ctx: IContext, payload: JwtPayload) => {
+  const { secret } = ctx.config.jwt
+  return sign(payload, secret, {
+    expiresIn: ctx.config.jwt.expiresIn
+  })
+}
 
 @Middleware({ type: 'before' })
 @Service()
@@ -62,14 +71,14 @@ export class JWTMiddleware implements KoaMiddlewareInterface {
       }
       try {
         // TODO: 这里拿到token并jwt解码后 应该根据用户信息再查一次数据库才是最好的
-        const decoded = verify(accessToken, JWT_SECRET)
+        const decoded = verifyToken(ctx, accessToken)
         ctx.state.user = decoded
         await next()
       } catch (e) {
         console.log('JWT error:', e)
         ctx.body = {
           code: CodeMap.NoLogin,
-          msg: 'token is not valid'
+          msg: e.message || 'token is invalid'
         }
       }
     }

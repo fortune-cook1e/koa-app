@@ -1,7 +1,6 @@
 import { Env } from './../types/common'
 import dotenv from 'dotenv'
 interface IEnvConstants {
-  JWT_SECRET: string
   HOST: string
   PORT: string
   USERNAME: string
