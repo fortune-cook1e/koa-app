@@ -64,7 +64,7 @@ export class JWTMiddleware implements KoaMiddlewareInterface {
       const accessToken = getJWTFromHttp(ctx)
       if (!accessToken) {
         ctx.body = {
-          code: CodeMap.Fail,
+          code: CodeMap.NoLogin,
           msg: 'token is not provided'
         }
         return false
