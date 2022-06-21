@@ -6,6 +6,7 @@ export interface GlobalConfig {
   jwt: {
     secret: string
     expiresIn: string
+    maxAge: number | string
     unless: string[]
     type: 'cookie' | 'header'
     key: string

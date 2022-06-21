@@ -20,12 +20,6 @@ import { LoginRequest } from '../types'
 export default class UserController {
   @Inject() private readonly usersService: UsersService
 
-  // 获取所有用户
-  @Get()
-  async getAll(@Ctx() ctx) {
-    return ctx.success(await this.usersService.getData())
-  }
-
   // 登录
   @Post('/login')
   async login(
@@ -89,6 +83,18 @@ export default class UserController {
   logout(@Ctx() ctx: IContext) {
     const { key } = ctx.config.jwt
     ctx.cookies.set(key, '')
-    return null
+    return {}
+  }
+
+  // 获取所有用户
+  @Get()
+  async getAll() {
+    const users = await this.usersService.getData()
+    return users.map(u => ({
+      id: u.id,
+      gender: u.gender,
+      age: u.age,
+      username: u.username
+    }))
   }
 }
