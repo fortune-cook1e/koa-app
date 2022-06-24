@@ -97,4 +97,10 @@ export default class UserController {
       username: u.username
     }))
   }
+
+  // 更新用户
+  @Post('/update')
+  async updateUser(@Body() user: DeepPartial<UsersEntity>) {
+    return await this.usersService.update(user)
+  }
 }
