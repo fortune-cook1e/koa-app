@@ -16,11 +16,14 @@ export class StaffEntity {
   gender: Gender
 
   @Column({ nullable: false })
-  entryTime: number
+  entryTime: string
 
   @Column({ nullable: false })
-  resignationTime: number
+  resignationTime: string
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: true })
   leave: boolean
+
+  @Column({ nullable: false })
+  company: string
 }

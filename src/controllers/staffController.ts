@@ -1,4 +1,4 @@
-import { DeepPartial } from 'typeorm'
+import { DeepPartial, Like } from 'typeorm'
 import {
   JsonController,
   Get,
@@ -19,10 +19,25 @@ export default class StaffController {
 
   @Get('/list')
   async getList(
-    @QueryParam('page') page: number,
-    @QueryParam('page_size') page_size: number
+    @QueryParam('page') page = 1,
+    @QueryParam('page_size') page_size = 10,
+    @QueryParam('keyword') keyword?: string
   ) {
-    return await this.StaffService.getData()
+    const _keyword = keyword || ''
+    const [list, total] = await this.StaffService.repo.findAndCount({
+      where: { name: Like('%' + _keyword + '%') },
+      order: { name: 'DESC' },
+      take: page_size,
+      skip: page - 1
+    })
+    return {
+      pager: {
+        page,
+        page_size: page_size || 10,
+        total
+      },
+      list
+    }
   }
 
   @Post('/add')

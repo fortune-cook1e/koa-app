@@ -71,10 +71,9 @@ export class JWTMiddleware implements KoaMiddlewareInterface {
       }
       try {
         // TODO: 这里拿到token并jwt解码后 应该根据用户信息再查一次数据库才是最好的
-        // TODO: 这里不能用 try catch 处理 因为会代替ErrorMiddleware工作
+        // FIXBUG: 这里不能用 try catch 包裹 next() 函数 因为会代替ErrorMiddleware工作
         const decoded = verifyToken(ctx, accessToken)
         ctx.state.user = decoded
-        await next()
       } catch (e) {
         console.log('JWT error:', e)
         ctx.body = {
@@ -82,6 +81,7 @@ export class JWTMiddleware implements KoaMiddlewareInterface {
           msg: e.message || 'token is invalid'
         }
       }
+      await next()
     }
   }
 }

@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm'
-import { UsersEntity } from './usersEntity'
+import { UsersEntity, StaffEntity } from './'
 import { getEnvConstants } from '../utils'
 
 const { HOST, PORT, USERNAME, PASSWORD } = getEnvConstants()
@@ -12,7 +12,7 @@ const AppDataSource = new DataSource({
   password: PASSWORD,
   database: 'koa-app',
   synchronize: true,
-  entities: [UsersEntity],
+  entities: [UsersEntity, StaffEntity],
   logging: false,
   subscribers: [],
   migrations: []
