@@ -4,7 +4,6 @@ import {
   Get,
   Post,
   Body,
-  Ctx,
   QueryParam,
   BodyParam
 } from 'routing-controllers'
@@ -26,9 +25,9 @@ export default class StaffController {
     const _keyword = keyword || ''
     const [list, total] = await this.StaffService.repo.findAndCount({
       where: { name: Like('%' + _keyword + '%') },
-      order: { name: 'DESC' },
+      order: { name: 'ASC' },
       take: page_size,
-      skip: page - 1
+      skip: (page - 1) * page_size
     })
     return {
       pager: {
@@ -38,6 +37,13 @@ export default class StaffController {
       },
       list
     }
+  }
+
+  @Get('/info')
+  async getInfo(@QueryParam('id') id: string) {
+    return await this.StaffService.getByWhere({
+      id
+    })
   }
 
   @Post('/add')
