@@ -21,8 +21,8 @@ export class StaffEntity {
   @Column({ nullable: false })
   resignationTime: string
 
-  @Column({ type: 'boolean', default: true })
-  leave: boolean
+  @Column({ nullable: false })
+  department: string
 
   @Column({ nullable: false })
   company: string

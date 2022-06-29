@@ -1,5 +1,5 @@
-import { IContext } from './../types/common'
-import { generateToken, injectToken } from './../middlewares/jwtMiddleware'
+import { IContext } from '../types/common'
+import { generateToken, injectToken } from '../middlewares/jwtMiddleware'
 import { DeepPartial } from 'typeorm'
 import {
   JsonController,
@@ -11,21 +11,21 @@ import {
 } from 'routing-controllers'
 import { Inject, Service } from 'typedi'
 import { genSalt, hash } from 'bcrypt'
-import { UsersService } from '../services'
-import { UsersEntity } from '../entities'
+import { UserService } from '../services'
+import { UserEntity } from '../entities'
 import { LoginRequest } from '../types'
 
-@JsonController('/users')
+@JsonController('/user')
 @Service()
 export default class UserController {
-  @Inject() private readonly usersService: UsersService
+  @Inject() private readonly usersService: UserService
 
   // 登录
   @Post('/login')
   async login(
     @Ctx() ctx: IContext,
     @Body() user: LoginRequest
-  ): Promise<DeepPartial<UsersEntity>> {
+  ): Promise<DeepPartial<UserEntity>> {
     const { username, password } = user
     try {
       const databaseUser = await this.usersService.getByWhere({
@@ -51,7 +51,7 @@ export default class UserController {
 
   // 新增用户
   @Post('/register')
-  async addUser(@Ctx() ctx: IContext, @Body() user: DeepPartial<UsersEntity>) {
+  async addUser(@Ctx() ctx: IContext, @Body() user: DeepPartial<UserEntity>) {
     const { username, password } = user
     if (!username || !password) throw new Error('username or password is empty')
     const databaseUser = await this.usersService.getByWhere({
@@ -87,7 +87,7 @@ export default class UserController {
   }
 
   // 获取所有用户
-  @Get()
+  @Get('/list')
   async getAll() {
     const users = await this.usersService.getData()
     return users.map(u => ({
@@ -100,7 +100,7 @@ export default class UserController {
 
   // 更新用户
   @Post('/update')
-  async updateUser(@Body() user: DeepPartial<UsersEntity>) {
+  async updateUser(@Body() user: DeepPartial<UserEntity>) {
     return await this.usersService.update(user)
   }
 }

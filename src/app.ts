@@ -18,7 +18,7 @@ import {
 } from './middlewares'
 import { connectWithDB } from './entities/database'
 import { services } from './services'
-import { UsersEntity } from './entities'
+import { UserEntity } from './entities'
 import { GLOBAL_CONFIG } from './config'
 
 const PORT = 3000
@@ -46,7 +46,7 @@ const start = async () => {
       currentUserChecker(action: Action) {
         try {
           const token = getJWTFromHttp(action.request.headers)
-          const decodedUser: DeepPartial<UsersEntity> = decodeJWT(token)
+          const decodedUser: DeepPartial<UserEntity> = decodeJWT(token)
           return decodedUser
         } catch {
           throw new UnauthorizedError()

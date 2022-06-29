@@ -32,7 +32,7 @@ export default class StaffController {
     return {
       pager: {
         page,
-        page_size: page_size || 10,
+        page_size: page_size,
         total
       },
       list

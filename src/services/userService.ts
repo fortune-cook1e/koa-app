@@ -1,11 +1,11 @@
 import { Service } from 'typedi'
 import { DataSource } from 'typeorm'
-import { UsersEntity } from '../entities'
+import { UserEntity } from '../entities'
 import { BaseService } from './baseService'
 
 @Service()
-export class UsersService extends BaseService<UsersEntity> {
+export class UserService extends BaseService<UserEntity> {
   constructor(db: DataSource) {
-    super(db.getRepository(UsersEntity))
+    super(db.getRepository(UserEntity))
   }
 }

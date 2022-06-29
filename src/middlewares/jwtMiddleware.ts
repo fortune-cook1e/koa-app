@@ -1,7 +1,7 @@
 import { JwtPayload } from './../types/user'
 import { Next } from 'koa'
 import { DeepPartial } from 'typeorm'
-import { UsersEntity } from '../entities'
+import { UserEntity } from '../entities'
 import { Middleware, KoaMiddlewareInterface } from 'routing-controllers'
 import { Service } from 'typedi'
 import { verify, decode, sign } from 'jsonwebtoken'
@@ -17,8 +17,8 @@ export const getJWTFromHttp = (ctx: IContext): string => {
   } else return ''
 }
 
-export const decodeJWT = (token: string): DeepPartial<UsersEntity> =>
-  decode(token) as DeepPartial<UsersEntity>
+export const decodeJWT = (token: string): DeepPartial<UserEntity> =>
+  decode(token) as DeepPartial<UserEntity>
 
 // 注入JWT
 // 1. cookie 情况下则注入到cookie

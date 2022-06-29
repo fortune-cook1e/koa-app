@@ -1,2 +1,2 @@
-export * from './usersEntity'
+export * from './userEntity'
 export * from './staffEntity'
